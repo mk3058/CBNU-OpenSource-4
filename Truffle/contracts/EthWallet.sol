@@ -15,8 +15,8 @@ contract EthWallet {
     }
 
     function sendEther(address payable _to, uint _amount) public {
-        require(msg.sender == owner, "소유자 정보가 일치하지 않습니다");
-        require(_amount <= getBalance(), "잔액이 부족합니다");
+        require(msg.sender == owner, "Only the owner of the wallet can make the request");
+        require(_amount <= getBalance(), "sending amount must be less than or equal to your balance");
         _to.transfer(_amount);
     }
 }
