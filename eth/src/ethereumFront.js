@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Web3 from 'web3';
 import EthereumBackend from './ethereumBack';
 
 const WalletComponent = () => {
@@ -9,10 +10,11 @@ const WalletComponent = () => {
 
     useEffect(() => {
         const loadBalance = async () => {
-            const balance = await EthereumBackend.getBalance();
-            setBalance(balance);
+            const balanceInWei = await EthereumBackend.getBalance();
+            const balanceInEther = Web3.utils.fromWei(balanceInWei, 'ether');
+            setBalance(balanceInEther);
         };
-
+    
         loadBalance();
     }, []);
 
