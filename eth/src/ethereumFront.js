@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import EthereumBackend from './ethereumBack';
+import './index.css';
 
 const WalletComponent = () => {
     const [balance, setBalance] = useState(0);
@@ -33,7 +34,7 @@ const WalletComponent = () => {
     };
 
     return (
-        <div>
+        <div className="wallet-container">
             <h2>Wallet Info</h2>
             <p>잔액: {balance.toString()} ETH</p>
             <input 
@@ -51,7 +52,6 @@ const WalletComponent = () => {
             <button onClick={handleSend}>송금</button>
             <p>{transactionStatus}</p>
         </div>
-        
     );
 };
 
