@@ -3,7 +3,9 @@ import ContractJSON from './contracts/EthWallet.json';
 
 class EthereumBackend {
     constructor() {
-        this.web3 = new Web3(Web3.givenProvider || 'http://localhost:7545');
+        const serverUrl = process.env.REACT_APP_SERVER_URL
+        const serverPort = process.env.REACT_APP_SERVER_PORT
+        this.web3 = new Web3(Web3.givenProvider || `${serverUrl}:${serverPort}`);
         this.contract = null;
         this.initializeContract();
     }
