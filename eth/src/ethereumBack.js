@@ -1,34 +1,45 @@
 import Web3 from 'web3';
-import ContractJSON from './contracts/EthWallet.json';
+import HTLCContractJSON from './contracts/HashedTimelock.json';
 
 class EthereumBackend {
     constructor() {
-        const serverUrl = process.env.REACT_APP_SERVER_URL
-        const serverPort = process.env.REACT_APP_SERVER_PORT
+        const serverUrl = process.env.REACT_APP_SERVER_URL;
+        const serverPort = process.env.REACT_APP_SERVER_PORT;
+
         this.web3 = new Web3(Web3.givenProvider || `${serverUrl}:${serverPort}`);
-        this.contract = null;
-        this.initializeContract();
+        this.hltcContract = null;
+        this.initializeHTLCContract();
     }
 
-    async initializeContract() {
+    async initializeHTLCContract() {
         const networkId = await this.web3.eth.net.getId();
-        const deployedNetwork = ContractJSON.networks[networkId];
-        this.contract = new this.web3.eth.Contract(
-            ContractJSON.abi,
+        const deployedNetwork = HTLCContractJSON.networks[networkId];
+
+        this.hltcContract = new this.web3.eth.Contract(
+            HTLCContractJSON.abi,
             deployedNetwork && deployedNetwork.address,
         );
     }
 
-    async getBalance() {
+    async newContract(receiver, hashlock, timelock, amount) {
+        const BigNumber = require('bignumber.js');
         const accounts = await this.web3.eth.getAccounts();
-        return this.contract.methods.getBalance().call({ from: accounts[0] });
+
+        const estimatedGas = await this.hltcContract.methods.newContract(receiver, hashlock, timelock)
+            .estimateGas({ from: accounts[0], value: this.web3.utils.toWei(amount, 'ether') });
+        const gasLimit = new BigNumber(estimatedGas).plus(new BigNumber(100000)); // gasLimit 넉넉하게 설정
+        const response = await this.hltcContract.methods.newContract(receiver, hashlock, timelock)
+            .send({ from: accounts[0], value: this.web3.utils.toWei(amount, 'ether'), gas: gasLimit.toString() });
+        const contractId = response.events.LogHTLCNew.returnValues.contractId;
+        return contractId;
     }
 
-    async sendEther(to, amount) {
+    async refund(contractId) {
         const accounts = await this.web3.eth.getAccounts();
-        return this.contract.methods.sendEther(to, this.web3.utils.toWei(amount, 'ether'))
+        return this.hltcContract.methods.refund(contractId)
             .send({ from: accounts[0] });
     }
 }
 
-export default new EthereumBackend();
+const ethereumBackend = new EthereumBackend();
+export default ethereumBackend;
