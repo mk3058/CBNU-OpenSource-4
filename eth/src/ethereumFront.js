@@ -7,7 +7,6 @@ function App() {
     const [preimage, setPreimage] = useState('');
     const [timelock, setTimelock] = useState('');
     const [amount, setAmount] = useState('');
-    const [contractId, setContractId] = useState('');
     const [contracts, setContracts] = useState([]);
 
     useEffect(() => {
@@ -37,7 +36,6 @@ function App() {
 
             const newContractId = await EthereumBackend.newContract(receiver, hashlock, calculatedTimelock, amount);
             console.log('New Contract Created:', newContractId);
-            setContractId(newContractId);
 
             const newContract = {
                 id: newContractId,
