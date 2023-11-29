@@ -8,6 +8,7 @@ function App() {
     const [timelock, setTimelock] = useState('');
     const [amount, setAmount] = useState('');
     const [contracts, setContracts] = useState([]);
+    const isRefundable = (remainingTimelock) => remainingTimelock <= 0;
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -79,7 +80,13 @@ function App() {
                     <div className="contract" key={contract.id}>
                         <p>Contract ID: {contract.id}</p>
                         <p>Remaining Timelock: {contract.remainingTimelock} seconds</p>
-                        <button onClick={() => handleRefund(contract.id)}>Refund</button>
+                        <button 
+                            onClick={() => handleRefund(contract.id)}
+                            disabled={!isRefundable(contract.remainingTimelock)}
+                            className={isRefundable(contract.remainingTimelock) ? '' : 'disabled-button'}
+                        >
+                            Refund
+                        </button>
                     </div>
                 ))}
             </div>

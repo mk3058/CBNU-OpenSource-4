@@ -36,6 +36,12 @@ button:hover {
     background-color: #0056b3;
 }
 
+.disabled-button {
+    color: #ccc;
+    background-color: #f3f3f3;
+    cursor: not-allowed;
+}
+
 .contract-list {
     margin-top: 20px;
 }
